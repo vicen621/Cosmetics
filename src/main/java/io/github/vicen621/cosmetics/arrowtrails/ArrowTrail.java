@@ -1,47 +1,56 @@
 package io.github.vicen621.cosmetics.arrowtrails;
 
-import io.github.vicen621.cosmetics.Cosmetics;
+import io.github.vicen621.cosmetics.Cosmetic;
+import io.github.vicen621.cosmetics.Main;
 import org.bukkit.Particle;
 import org.bukkit.entity.Arrow;
 import org.bukkit.metadata.FixedMetadataValue;
 
-public abstract class AbstractArrowTrail {
+import java.util.Arrays;
 
-    private final int id;
-    private final String name;
-    private final String permission;
-    private final int cost;
+/**
+ * Represents an arrow trail.
+ */
+public final class ArrowTrail extends Cosmetic<Arrow> {
+
     private final Particle[] particles;
 
-    public AbstractArrowTrail(int id, String name, String permission, int cost, Particle[] particles) {
-        this.id = id;
-        this.name = name;
-        this.permission = permission;
-        this.cost = cost;
+    public ArrowTrail(int id, String name, String permission, int cost, Particle... particles) {
+        super(id, name, permission, cost);
         this.particles = particles;
     }
 
-    public void addTrail(Arrow arrow) {
-        arrow.setMetadata("trail", new FixedMetadataValue(Cosmetics.getInstance(), getId()));
+    @Override
+    public void apply(Arrow arrow) {
+        arrow.setMetadata("trail", new FixedMetadataValue(Main.getInstance(), getId()));
     }
 
-    public int getId() {
-        return id;
+    @Override
+    public boolean hasCosmetic(Arrow arrow) {
+        return arrow.hasMetadata("trail") && arrow.getMetadata("trail").get(0).asInt() == getId();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getPermission() {
-        return permission;
-    }
-
-    public int getCost() {
-        return cost;
-    }
-
+    /**
+     * Gets the particles of the arrow trail.
+     * @return the particles
+     */
     public Particle[] getParticles() {
         return particles;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ArrowTrail that = (ArrowTrail) o;
+        return Arrays.equals(particles, that.particles);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + Arrays.hashCode(particles);
+        return result;
     }
 }

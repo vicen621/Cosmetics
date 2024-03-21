@@ -2,9 +2,9 @@ package io.github.vicen621.cosmetics;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class Cosmetics extends JavaPlugin {
+public final class Main extends JavaPlugin {
 
-    private static Cosmetics instance;
+    private static Main instance;
 
     @Override
     public void onEnable() {
@@ -16,7 +16,7 @@ public final class Cosmetics extends JavaPlugin {
         // Plugin shutdown logic
     }
 
-    public static Cosmetics getInstance() {
+    public static Main getInstance() {
         return instance;
     }
 }
