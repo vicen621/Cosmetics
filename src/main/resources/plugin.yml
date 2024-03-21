@@ -1,0 +1,7 @@
+name: Cosmetics
+version: '${version}'
+main: io.github.vicen621.cosmetics.Cosmetics
+api-version: '1.20'
+prefix: Cosmetics
+authors: [Vicen621]
+website: https://github.com/Vicen621
