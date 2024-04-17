@@ -2,20 +2,16 @@ package io.github.vicen621.cosmetics.cosmetics.arrowtrails;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 import io.github.vicen621.cosmetics.cosmetics.Cosmetic;
-import io.github.vicen621.cosmetics.Main;
 import io.github.vicen621.cosmetics.cosmetics.Updatable;
 import io.github.vicen621.cosmetics.cosmetics.effects.ParticleEffect;
-import io.github.vicen621.cosmetics.cosmetics.serializers.ArrowTrailSerializer;
-import org.bukkit.Particle;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Projectile;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -27,19 +23,20 @@ public final class ArrowTrail extends Cosmetic<Arrow> implements Updatable {
 
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
-            .registerTypeAdapter(ArrowTrail.class, new ArrowTrailSerializer())
             .create();
-    private final ParticleEffect effect;
+    private final ParticleEffect particleEffect;
+    @Expose(serialize = false, deserialize = false)
     private final Set<Arrow> projectiles;
 
-    public ArrowTrail(int id, String name, String permission, int cost, ParticleEffect effect) {
+    public ArrowTrail(int id, String name, String permission, int cost, ParticleEffect particleEffect) {
         super(id, name, permission, cost);
-        this.effect = effect;
+        this.particleEffect = particleEffect;
         this.projectiles = new HashSet<>();
     }
 
     @Override
     public void apply(Arrow arrow) {
+        GSON.toJson(this);
         projectiles.add(arrow);
     }
 
@@ -51,15 +48,19 @@ public final class ArrowTrail extends Cosmetic<Arrow> implements Updatable {
     @Override
     public void onUpdate() {
         for (Projectile projectile : projectiles)
-            getEffect().display(projectile);
+            getParticleEffect().display(projectile);
     }
 
     /**
      * Gets the particles of the arrow trail.
      * @return the particles
      */
-    public ParticleEffect getEffect() {
-        return effect;
+    public ParticleEffect getParticleEffect() {
+        return particleEffect;
+    }
+
+    public String toJson() {
+        return GSON.toJson(this);
     }
 
     /**
@@ -78,11 +79,11 @@ public final class ArrowTrail extends Cosmetic<Arrow> implements Updatable {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         ArrowTrail that = (ArrowTrail) o;
-        return Objects.equals(effect, that.effect) && Objects.equals(projectiles, that.projectiles);
+        return Objects.equals(particleEffect, that.particleEffect) && Objects.equals(projectiles, that.projectiles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), effect, projectiles);
+        return Objects.hash(super.hashCode(), particleEffect, projectiles);
     }
 }

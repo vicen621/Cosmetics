@@ -1,13 +1,14 @@
 package io.github.vicen621.cosmetics.cosmetics.effects;
 
+import com.google.gson.annotations.JsonAdapter;
+import io.github.vicen621.cosmetics.cosmetics.serializers.ParticleDataSerializer;
 import org.bukkit.entity.Entity;
 
 /**
  * Represents a particle effect.
  */
-// Se how to serialize this with json
 public abstract class ParticleEffect {
-
+    @JsonAdapter(ParticleDataSerializer.class)
     private final ParticleData particleData;
     private final int repeatDelay;
 

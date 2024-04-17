@@ -11,7 +11,7 @@ public class ParticleDataSerializer implements JsonSerializer<ParticleData>, Jso
     @Override
     public ParticleData deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonParticleData = json.getAsJsonObject();
-        Particle particle = Particle.valueOf(jsonParticleData.get("particle").getAsString());
+        Particle particle = Particle.valueOf(jsonParticleData.get("particle").getAsString().toUpperCase());
         String hexColor = jsonParticleData.get("color").getAsString();
         Color color = Color.fromRGB(java.awt.Color.decode(hexColor).getRGB());
         return new ParticleData(particle, color);
