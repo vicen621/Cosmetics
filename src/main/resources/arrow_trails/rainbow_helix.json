@@ -1,9 +1,9 @@
 {
   "id": 0,
-  "name": "Rainbow helix",
-  "permission": "cosmetics.projectile.rainbow_helix",
+  "name": "Flame helix",
+  "permission": "cosmetics.trail.flame_helix",
   "cost": 10,
-  "particleData": {
+  "particleEffect": {
     "type": "helix",
     "repeatDelay": 1,
     "particle": {

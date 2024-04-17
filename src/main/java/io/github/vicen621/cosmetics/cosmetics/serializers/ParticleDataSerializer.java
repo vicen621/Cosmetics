@@ -21,7 +21,8 @@ public class ParticleDataSerializer implements JsonSerializer<ParticleData>, Jso
     public JsonElement serialize(ParticleData src, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject jsonParticleData = new JsonObject();
         jsonParticleData.add("particle", new JsonPrimitive(src.getParticle().name()));
-        jsonParticleData.add("color", new JsonPrimitive(String.format("#%06X", (0xFFFFFF & src.getColor().asRGB()))));
+        if (src.getColor() != null)
+            jsonParticleData.add("color", new JsonPrimitive(String.format("#%06X", (0xFFFFFF & src.getColor().asRGB()))));
         return null;
     }
 }

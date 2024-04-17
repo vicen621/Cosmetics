@@ -5,7 +5,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import io.github.vicen621.cosmetics.cosmetics.Cosmetic;
 import io.github.vicen621.cosmetics.cosmetics.Updatable;
+import io.github.vicen621.cosmetics.cosmetics.effects.ParticleData;
 import io.github.vicen621.cosmetics.cosmetics.effects.ParticleEffect;
+import io.github.vicen621.cosmetics.cosmetics.serializers.ParticleDataSerializer;
+import io.github.vicen621.cosmetics.cosmetics.serializers.ParticleEffectSerializer;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Projectile;
 
@@ -22,11 +25,12 @@ import java.util.Set;
 public final class ArrowTrail extends Cosmetic<Arrow> implements Updatable {
 
     private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(ParticleData.class, new ParticleDataSerializer())
+            .registerTypeAdapter(ParticleEffect.class, new ParticleEffectSerializer())
             .setPrettyPrinting()
             .create();
     private final ParticleEffect particleEffect;
-    @Expose(serialize = false, deserialize = false)
-    private final Set<Arrow> projectiles;
+    private transient final Set<Arrow> projectiles;
 
     public ArrowTrail(int id, String name, String permission, int cost, ParticleEffect particleEffect) {
         super(id, name, permission, cost);

@@ -1,6 +1,6 @@
 name: Cosmetics
 version: '${version}'
-main: io.github.vicen621.cosmetics.Cosmetics
+main: io.github.vicen621.cosmetics.Main
 api-version: '1.20'
 prefix: Cosmetics
 authors: [Vicen621]

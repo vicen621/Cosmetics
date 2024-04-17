@@ -7,7 +7,7 @@ import org.bukkit.util.Vector;
 public class HelixParticleEffect extends ParticleEffect {
     private static final Vector Y_AXIS = new Vector(0, 1, 0);
     private static final double STEP = Math.PI / 8;
-    private double angle = 0;
+    private transient double angle = 0;
 
     public HelixParticleEffect(ParticleData effect, int repeatDelay) {
         super(effect, repeatDelay);
