@@ -1,4 +1,6 @@
-package io.github.vicen621.cosmetics;
+package io.github.vicen621.cosmetics.cosmetics;
+
+import org.bukkit.event.Listener;
 
 import java.util.Objects;
 
@@ -6,7 +8,7 @@ import java.util.Objects;
  * Represents a cosmetic.
  * @param <T> the type of entity the cosmetic applies to
  */
-public abstract class Cosmetic<T> {
+public abstract class Cosmetic<T> implements Listener {
     private final int id;
     private final String name;
     private final String permission;

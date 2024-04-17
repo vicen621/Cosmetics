@@ -1,0 +1,14 @@
+{
+  "id": 0,
+  "name": "Rainbow helix",
+  "permission": "cosmetics.projectile.rainbow_helix",
+  "cost": 10,
+  "effect": {
+    "name": "helix",
+    "repeat_delay": 1,
+    "particle": {
+      "particle": "DUST",
+      "color": "rainbow"
+    }
+  }
+}
