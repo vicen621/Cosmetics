@@ -12,9 +12,15 @@ public class ParticleDataSerializer implements JsonSerializer<ParticleData>, Jso
     public ParticleData deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonParticleData = json.getAsJsonObject();
         Particle particle = Particle.valueOf(jsonParticleData.get("particle").getAsString().toUpperCase());
-        String hexColor = jsonParticleData.get("color").getAsString();
-        Color color = Color.fromRGB(java.awt.Color.decode(hexColor).getRGB());
-        return new ParticleData(particle, color);
+
+        if (jsonParticleData.has("color")) {
+            String hexColor = jsonParticleData.get("color").getAsString();
+            java.awt.Color javaColor = java.awt.Color.decode(hexColor);
+            Color color = Color.fromRGB(javaColor.getRed(), javaColor.getGreen(), javaColor.getBlue());
+            return new ParticleData(particle, color);
+        }
+
+        return new ParticleData(particle);
     }
 
     @Override
@@ -23,6 +29,6 @@ public class ParticleDataSerializer implements JsonSerializer<ParticleData>, Jso
         jsonParticleData.add("particle", new JsonPrimitive(src.getParticle().name()));
         if (src.getColor() != null)
             jsonParticleData.add("color", new JsonPrimitive(String.format("#%06X", (0xFFFFFF & src.getColor().asRGB()))));
-        return null;
+        return jsonParticleData;
     }
 }

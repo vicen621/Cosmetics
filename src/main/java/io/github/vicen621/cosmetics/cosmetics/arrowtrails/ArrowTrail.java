@@ -1,14 +1,8 @@
 package io.github.vicen621.cosmetics.cosmetics.arrowtrails;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.Expose;
 import io.github.vicen621.cosmetics.cosmetics.Cosmetic;
 import io.github.vicen621.cosmetics.cosmetics.Updatable;
-import io.github.vicen621.cosmetics.cosmetics.effects.ParticleData;
 import io.github.vicen621.cosmetics.cosmetics.effects.ParticleEffect;
-import io.github.vicen621.cosmetics.cosmetics.serializers.ParticleDataSerializer;
-import io.github.vicen621.cosmetics.cosmetics.serializers.ParticleEffectSerializer;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Projectile;
 
@@ -23,12 +17,6 @@ import java.util.Set;
  * Represents an arrow trail.
  */
 public final class ArrowTrail extends Cosmetic<Arrow> implements Updatable {
-
-    private static final Gson GSON = new GsonBuilder()
-            .registerTypeAdapter(ParticleData.class, new ParticleDataSerializer())
-            .registerTypeAdapter(ParticleEffect.class, new ParticleEffectSerializer())
-            .setPrettyPrinting()
-            .create();
     private final ParticleEffect particleEffect;
     private transient final Set<Arrow> projectiles;
 
@@ -40,7 +28,7 @@ public final class ArrowTrail extends Cosmetic<Arrow> implements Updatable {
 
     @Override
     public void apply(Arrow arrow) {
-        GSON.toJson(this);
+        getGson().toJson(this);
         projectiles.add(arrow);
     }
 
@@ -64,7 +52,7 @@ public final class ArrowTrail extends Cosmetic<Arrow> implements Updatable {
     }
 
     public String toJson() {
-        return GSON.toJson(this);
+        return getGson().toJson(this);
     }
 
     /**
@@ -74,7 +62,7 @@ public final class ArrowTrail extends Cosmetic<Arrow> implements Updatable {
      * @throws FileNotFoundException if the file not exists
      */
     public static ArrowTrail load(File file) throws FileNotFoundException {
-        return GSON.fromJson(new FileReader(file), ArrowTrail.class);
+        return getGson().fromJson(new FileReader(file), ArrowTrail.class);
     }
 
     @Override

@@ -1,5 +1,13 @@
 package io.github.vicen621.cosmetics.cosmetics;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.github.vicen621.cosmetics.cosmetics.effects.BasicParticleEffect;
+import io.github.vicen621.cosmetics.cosmetics.effects.HelixParticleEffect;
+import io.github.vicen621.cosmetics.cosmetics.effects.ParticleData;
+import io.github.vicen621.cosmetics.cosmetics.effects.ParticleEffect;
+import io.github.vicen621.cosmetics.cosmetics.serializers.ParticleDataSerializer;
+import io.github.vicen621.cosmetics.cosmetics.serializers.RuntimeTypeAdapterFactory;
 import org.bukkit.event.Listener;
 
 import java.util.Objects;
@@ -9,6 +17,15 @@ import java.util.Objects;
  * @param <T> the type of entity the cosmetic applies to
  */
 public abstract class Cosmetic<T> implements Listener {
+    private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(ParticleData.class, new ParticleDataSerializer())
+            .registerTypeAdapterFactory(RuntimeTypeAdapterFactory.of(ParticleEffect.class)
+                    .registerSubtype(BasicParticleEffect.class, "basic")
+                    .registerSubtype(HelixParticleEffect.class, "helix")
+            )
+            .setPrettyPrinting()
+            .create();
+
     private final int id;
     private final String name;
     private final String permission;
@@ -33,6 +50,10 @@ public abstract class Cosmetic<T> implements Listener {
      * @return true if the entity has the cosmetic applied, false otherwise
      */
     public abstract boolean hasCosmetic(T t);
+
+    public static Gson getGson() {
+        return GSON;
+    }
 
     /**
      * Gets the id of the cosmetic.

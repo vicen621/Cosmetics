@@ -4,6 +4,8 @@ import com.google.gson.annotations.JsonAdapter;
 import io.github.vicen621.cosmetics.cosmetics.serializers.ParticleDataSerializer;
 import org.bukkit.entity.Entity;
 
+import java.util.Objects;
+
 /**
  * Represents a particle effect.
  */
@@ -37,5 +39,17 @@ public abstract class ParticleEffect {
      */
     public int getRepeatDelay() {
         return repeatDelay;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ParticleEffect that)) return false;
+        return getRepeatDelay() == that.getRepeatDelay() && Objects.equals(getParticleData(), that.getParticleData());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getParticleData(), getRepeatDelay());
     }
 }

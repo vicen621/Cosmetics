@@ -4,6 +4,8 @@ import com.destroystokyo.paper.ParticleBuilder;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 
+import java.util.Objects;
+
 public class ParticleData {
     private final Particle particle;
     private final Color color;
@@ -31,5 +33,17 @@ public class ParticleData {
 
     public Color getColor() {
         return color;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ParticleData that)) return false;
+        return getParticle() == that.getParticle() && Objects.equals(getColor(), that.getColor());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getParticle(), getColor());
     }
 }
