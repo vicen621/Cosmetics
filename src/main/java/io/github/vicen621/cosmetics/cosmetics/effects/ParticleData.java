@@ -1,13 +1,16 @@
 package io.github.vicen621.cosmetics.cosmetics.effects;
 
 import com.destroystokyo.paper.ParticleBuilder;
+import com.google.gson.annotations.Expose;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 
 import java.util.Objects;
 
 public class ParticleData {
+    @Expose
     private final Particle particle;
+    @Expose
     private final Color color;
 
     public ParticleData(Particle particle) {

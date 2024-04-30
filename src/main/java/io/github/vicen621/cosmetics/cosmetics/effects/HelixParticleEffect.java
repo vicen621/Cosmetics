@@ -7,7 +7,7 @@ import org.bukkit.util.Vector;
 public class HelixParticleEffect extends ParticleEffect {
     private static final Vector Y_AXIS = new Vector(0, 1, 0);
     private static final double STEP = Math.PI / 8;
-    private transient double angle = 0;
+    private double angle = 0;
 
     public HelixParticleEffect(ParticleData effect, int repeatDelay) {
         super(effect, repeatDelay);
@@ -24,7 +24,8 @@ public class HelixParticleEffect extends ParticleEffect {
 
     public void showHelix(Entity entity, Vector distance) {
         World world = entity.getWorld();
-        getParticleData().createParticleBuilder().location(entity.getLocation().add(distance)).spawn();
-        getParticleData().createParticleBuilder().location(entity.getLocation().subtract(distance)).spawn();
+        System.out.println("Showing helix");
+        getParticleData().createParticleBuilder().location(entity.getLocation().add(distance)).extra(0).spawn();
+        getParticleData().createParticleBuilder().location(entity.getLocation().subtract(distance)).extra(0).spawn();
     }
 }

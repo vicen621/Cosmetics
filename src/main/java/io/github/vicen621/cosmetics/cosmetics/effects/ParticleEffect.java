@@ -1,5 +1,6 @@
 package io.github.vicen621.cosmetics.cosmetics.effects;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.JsonAdapter;
 import io.github.vicen621.cosmetics.cosmetics.serializers.ParticleDataSerializer;
 import org.bukkit.entity.Entity;
@@ -10,8 +11,10 @@ import java.util.Objects;
  * Represents a particle effect.
  */
 public abstract class ParticleEffect {
+    @Expose
     @JsonAdapter(ParticleDataSerializer.class)
     private final ParticleData particleData;
+    @Expose
     private final int repeatDelay;
 
     protected ParticleEffect(ParticleData particleData, int repeatDelay) {

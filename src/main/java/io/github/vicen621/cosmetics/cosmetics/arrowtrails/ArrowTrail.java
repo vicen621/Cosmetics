@@ -1,34 +1,95 @@
 package io.github.vicen621.cosmetics.cosmetics.arrowtrails;
 
+import com.google.gson.annotations.Expose;
+import io.github.vicen621.cosmetics.Main;
 import io.github.vicen621.cosmetics.cosmetics.Cosmetic;
 import io.github.vicen621.cosmetics.cosmetics.Updatable;
 import io.github.vicen621.cosmetics.cosmetics.effects.ParticleEffect;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 
 /**
  * Represents an arrow trail.
  */
+//TODO: find why the arrow trail is not displayed
+// also when equipped, unequipped and equipped again it throws an error in console
 public final class ArrowTrail extends Cosmetic<Arrow> implements Updatable {
+    @Expose
     private final ParticleEffect particleEffect;
-    private transient final Set<Arrow> projectiles;
+    private Set<Arrow> projectiles;
 
     public ArrowTrail(int id, String name, String permission, int cost, ParticleEffect particleEffect) {
         super(id, name, permission, cost);
         this.particleEffect = particleEffect;
-        this.projectiles = new HashSet<>();
+    }
+
+    @EventHandler
+    public void onShoot(ProjectileLaunchEvent event) {
+        //TODO: Remove debug messages
+        if (!(event.getEntity().getShooter() instanceof Player p)) {
+            System.out.println("not a player");
+            return;
+        }
+
+        if (!isEquipped(p)) {
+            p.sendRichMessage("not equipped");
+            return;
+        }
+        if (!(event.getEntity() instanceof Arrow arrow)) {
+            p.sendRichMessage("not an arrow");
+            return;
+        }
+
+        projectiles.add(arrow);
+    }
+
+    @Override
+    public void onUpdate() {
+        Iterator<Arrow> iter = projectiles.iterator();
+
+        while (iter.hasNext()) {
+            Arrow projectile = iter.next();
+
+            if (projectile.isDead() || projectile.isOnGround() || projectile.isInBlock()) {
+                iter.remove();
+                continue;
+            }
+
+            System.out.println("displaying particle");
+            getParticleEffect().display(projectile);
+        }
+    }
+
+    @Override
+    protected void onEquip(Player player) {
+        player.getPersistentDataContainer().set(
+                new NamespacedKey(Main.getInstance(), "arrow_trail"),
+                PersistentDataType.INTEGER, getId()
+        );
+    }
+
+    @Override
+    protected void onUnequip(Player player) {
+        player.getPersistentDataContainer().set(
+                new NamespacedKey(Main.getInstance(), "arrow_trail"),
+                PersistentDataType.INTEGER, -1
+        );
     }
 
     @Override
     public void apply(Arrow arrow) {
-        getGson().toJson(this);
         projectiles.add(arrow);
     }
 
@@ -38,9 +99,8 @@ public final class ArrowTrail extends Cosmetic<Arrow> implements Updatable {
     }
 
     @Override
-    public void onUpdate() {
-        for (Projectile projectile : projectiles)
-            getParticleEffect().display(projectile);
+    protected void scheduleTask() {
+        runTaskTimerAsynchronously(getPlugin(), 0, getParticleEffect().getRepeatDelay());
     }
 
     /**
@@ -51,10 +111,6 @@ public final class ArrowTrail extends Cosmetic<Arrow> implements Updatable {
         return particleEffect;
     }
 
-    public String toJson() {
-        return getGson().toJson(this);
-    }
-
     /**
      * parse an arrow trail from the given file
      * @param file the file
@@ -62,7 +118,14 @@ public final class ArrowTrail extends Cosmetic<Arrow> implements Updatable {
      * @throws FileNotFoundException if the file not exists
      */
     public static ArrowTrail load(File file) throws FileNotFoundException {
-        return getGson().fromJson(new FileReader(file), ArrowTrail.class);
+        ArrowTrail trail = getGson().fromJson(new FileReader(file), ArrowTrail.class);
+        // Hay que llamar a este metodo porque Gson no llama al constructor y de no llamarlo queda en null
+        trail.initializeProjectiles();
+        return trail;
+    }
+
+    private void initializeProjectiles() {
+        this.projectiles = new HashSet<>();
     }
 
     @Override

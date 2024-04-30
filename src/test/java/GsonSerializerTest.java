@@ -20,6 +20,7 @@ class GsonSerializerTest {
                     .registerSubtype(BasicParticleEffect.class, "basic")
                     .registerSubtype(HelixParticleEffect.class, "helix")
             )
+            .excludeFieldsWithoutExposeAnnotation()
             .create();
 
     @Test

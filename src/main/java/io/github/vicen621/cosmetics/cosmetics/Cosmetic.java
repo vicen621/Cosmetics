@@ -2,13 +2,20 @@ package io.github.vicen621.cosmetics.cosmetics;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
+import io.github.vicen621.cosmetics.Main;
 import io.github.vicen621.cosmetics.cosmetics.effects.BasicParticleEffect;
 import io.github.vicen621.cosmetics.cosmetics.effects.HelixParticleEffect;
 import io.github.vicen621.cosmetics.cosmetics.effects.ParticleData;
 import io.github.vicen621.cosmetics.cosmetics.effects.ParticleEffect;
 import io.github.vicen621.cosmetics.cosmetics.serializers.ParticleDataSerializer;
 import io.github.vicen621.cosmetics.cosmetics.serializers.RuntimeTypeAdapterFactory;
+import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
 
@@ -16,19 +23,23 @@ import java.util.Objects;
  * Represents a cosmetic.
  * @param <T> the type of entity the cosmetic applies to
  */
-public abstract class Cosmetic<T> implements Listener {
+public abstract class Cosmetic<T> extends BukkitRunnable implements Listener {
     private static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(ParticleData.class, new ParticleDataSerializer())
             .registerTypeAdapterFactory(RuntimeTypeAdapterFactory.of(ParticleEffect.class)
                     .registerSubtype(BasicParticleEffect.class, "basic")
                     .registerSubtype(HelixParticleEffect.class, "helix")
             )
+            .excludeFieldsWithoutExposeAnnotation()
             .setPrettyPrinting()
             .create();
-
+    @Expose
     private final int id;
+    @Expose
     private final String name;
+    @Expose
     private final String permission;
+    @Expose
     private final int cost;
 
     public Cosmetic(int id, String name, String permission, int cost) {
@@ -37,6 +48,59 @@ public abstract class Cosmetic<T> implements Listener {
         this.permission = permission;
         this.cost = cost;
     }
+
+    public void equip(Player player) {
+        getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
+
+        if (this instanceof Updatable)
+            scheduleTask();
+
+        onEquip(player);
+    }
+
+    // FIXME: No cancela la task, al hacer equip otra vez tira error
+    public void unequip(Player player) {
+        cancel();
+        HandlerList.unregisterAll(this);
+
+        onUnequip(player);
+    }
+
+    protected void scheduleTask() {
+        runTaskTimer(getPlugin(), 0, 1);
+    }
+
+    @Override
+    public void run() {
+        ((Updatable) this).onUpdate();
+    }
+
+    //TODO: make this method abstract and set the correct namespace key
+    public boolean isEquipped(Player player) {
+        return player.getPersistentDataContainer().getOrDefault(
+                new NamespacedKey(Main.getInstance(), "arrow_trail"),
+                PersistentDataType.INTEGER,
+                -1
+        ) == getId();
+    }
+
+    public boolean canEquip(Player player) {
+        return player.hasPermission(permission);
+    }
+
+    public String toJson() {
+        return getGson().toJson(this);
+    }
+
+    /**
+     * Called when the cosmetic is equipped.
+     */
+    protected abstract void onEquip(Player player);
+
+    /**
+     * Called when the cosmetic is unequipped.
+     */
+    protected abstract void onUnequip(Player player);
 
     /**
      * Applies the cosmetic to the entity.
@@ -85,6 +149,10 @@ public abstract class Cosmetic<T> implements Listener {
      */
     public int getCost() {
         return cost;
+    }
+
+    public Main getPlugin() {
+        return Main.getInstance();
     }
 
     @Override

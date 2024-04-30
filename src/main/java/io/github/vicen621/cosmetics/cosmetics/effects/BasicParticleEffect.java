@@ -10,6 +10,6 @@ public class BasicParticleEffect extends ParticleEffect {
 
     @Override
     public void display(Entity entity) {
-        getParticleData().createParticleBuilder().location(entity.getLocation()).spawn();
+        getParticleData().createParticleBuilder().location(entity.getLocation()).extra(0).spawn();
     }
 }

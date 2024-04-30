@@ -20,7 +20,7 @@ public final class ArrowTrails implements DataLoader<ArrowTrail> {
     private static ImmutableList<ArrowTrail> trails;
 
     public ArrowTrails() {
-        trails = load(new File(Main.getInstance().getDataFolder(), "arrow_trails"));
+        trails = load(Main.getCosmeticFolder("arrow_trails"));
     }
 
     /**
@@ -28,19 +28,23 @@ public final class ArrowTrails implements DataLoader<ArrowTrail> {
      * @param directory the directory
      * @return the arrow trails
      */
+    //TODO: Remove debug message
     public ImmutableList<ArrowTrail> load(File directory) {
         if (directory.isFile())
             throw new IllegalArgumentException("The file must be a directory");
 
         File[] files = directory.listFiles(new PatternFilenameFilter(".*\\.json"));
-        if (files == null)
+        if (files == null) {
+            Main.getInstance().getLogger().info("files are null");
             return ImmutableList.of();
+        }
 
         ImmutableList.Builder<ArrowTrail> builder = ImmutableList.builder();
         Arrays.stream(files).forEach(file -> {
             try {
                 ArrowTrail trail = ArrowTrail.load(file);
                 builder.add(trail);
+                Main.getInstance().getLogger().info("Loadded arrow trail: " + trail.getName());
             } catch (FileNotFoundException ignored) { }
         });
 
