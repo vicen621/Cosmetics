@@ -4,6 +4,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 
+//TODO: Fijarse bien los tiempos de este ParticleEffect porque no se ve que esten girando
 public class HelixParticleEffect extends ParticleEffect {
     private static final Vector Y_AXIS = new Vector(0, 1, 0);
     private static final double STEP = Math.PI / 8;
